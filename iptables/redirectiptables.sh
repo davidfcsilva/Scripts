@@ -1,3 +1,5 @@
+#!/bin/sh
+
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.12.77:80
 iptables -t nat -A PREROUTING -s 10.38.0.0/24 -p tcp --dport 81 -j DNAT --to-destination 10.21.5.66:80
 

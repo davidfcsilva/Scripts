@@ -1,5 +1,5 @@
 #!/bin/bash
-for host in `cat serverlist2.txt`;
+for host in `cat serverlist.txt`;
 do
 ip="$(host $host|awk '{print $4}')"
 echo "$host as the ip $ip"
