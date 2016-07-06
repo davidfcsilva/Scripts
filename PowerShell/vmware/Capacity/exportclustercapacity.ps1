@@ -1,13 +1,22 @@
-﻿$report = @()
-#$VCServerName = "10.32.8.134"
-#$VCServerName = "10.34.8.134"
-#$VCServerName = "ukvcenterp01"
+﻿@"
+===============================================================================
+Title:         ExportClusterCapacity.ps1
+Description:   Exports Cluster Capacity from vCenter into a .CSV file for importing into anything
+Usage:         .\ExportClusterCapacity.ps1
+Date:          04/05/2016
+Created by:    David Silva
+===============================================================================
+"@
+
+$report = @()
 $VCServerName = "ldmevesxcenp001.ladbrokes.co.uk"
 #$VC = Connect-VIServer $VCServerName
 
 $clusterName = "*"
 $now = get-date -Format "dd-MMM-yyyy HH:mm" 
 $todayMidnight = (Get-date -Hour 0 -Minute 0 -Second 0).AddMinutes(-1)
+
+$reportinglocation = "e:\reporting"
 
 $allvms = @()
 $allhosts = @()
@@ -22,8 +31,8 @@ foreach($cluster in Get-Cluster -Name $clusterName){
         $hoststat = "" | Select HostName, MemMax, MemAvg, MemMin, CPUMax, CPUAvg, CPUMin
         $hoststat.HostName = $vmHost.name
   
-        #$statcpu = Get-Stat -Entity ($vmHost) -start (get-date).AddDays(-30) -Finish (Get-Date) -MaxSamples 10000 -stat cpu.usage.average
-        #$statmem = Get-Stat -Entity ($vmHost) -start (get-date).AddDays(-30) -Finish (Get-Date) -MaxSamples 10000 -stat mem.usage.average
+        # $statcpu = Get-Stat -Entity ($vmHost) -start (get-date).AddDays(-30) -Finish (Get-Date) -MaxSamples 10000 -stat cpu.usage.average
+        # $statmem = Get-Stat -Entity ($vmHost) -start (get-date).AddDays(-30) -Finish (Get-Date) -MaxSamples 10000 -stat mem.usage.average
         $statcpu = Get-Stat -Entity ($vmHost) -start $todayMidnight.AddDays(-4) -Finish $todayMidnight.AddDays(-3) -stat cpu.usage.average |where{$_.instance -eq ""}
         $statmem = Get-Stat -Entity ($vmHost) -start $todayMidnight.AddDays(-4) -Finish $todayMidnight.AddDays(-3) -stat mem.usage.average |where{$_.instance -eq ""}
     
@@ -38,7 +47,8 @@ foreach($cluster in Get-Cluster -Name $clusterName){
         $hoststat.MemMin = $mem.Minimum
         $allhosts += $hoststat
     }
-    #$allhosts | Select HostName, MemMax, MemAvg, MemMin, CPUMax, CPUAvg, CPUMin | Export-Csv "e:\reporting\$cluster-Hostsmetrics.csv" -noTypeInformation
+    # Line bellow is used for debugging purposes
+    # $allhosts | Select HostName, MemMax, MemAvg, MemMin, CPUMax, CPUAvg, CPUMin | Export-Csv "e:\reporting\$cluster-Hostsmetrics.csv" -noTypeInformation
 
     $ds = Get-Datastore -VMHost $esx | where {$_.Type -eq "VMFS" -and (Get-View $_).Summary.MultipleHostAccess}
         
@@ -132,4 +142,4 @@ foreach($cluster in Get-Cluster -Name $clusterName){
     $row."Date:" = $now
     $report += $row
 } 
-$report | Export-Csv "e:\reporting\Cluster-Report.csv" -NoTypeInformation -UseCulture
+$report | Export-Csv "$reportinglocation\Cluster-Report.csv" -NoTypeInformation -UseCulture

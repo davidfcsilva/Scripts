@@ -10,7 +10,7 @@ Created by:    David Silva
 
 
 # Variables
-#$VCServerName = "10.32.8.134"
+$VCServerName = "10.32.8.134"
 $VCServerName = "ldmevesxcenp001.ladbrokes.co.uk"
 $VC = Connect-VIServer $VCServerName
 $TARGETDIR = "E:\Reporting"
