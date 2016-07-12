@@ -1,0 +1,3 @@
+﻿Get-VMHost -State NotResponding|get-vm|select name,vmhost|export-csv -path "E:\script\unknow.csv" -NoTypeInformation -UseCulture
+Get-VMHost -State NotResponding|get-vm|select name,vmhost|export-csv -path "E:\script\unknow123.csv" -NoTypeInformation -UseCulture
+Get-VMHost -State NotResponding|get-vm |Where-Object {$_.PowerState -eq "PoweredOn"}|select name,vmhost|export-csv -path "E:\script\vm.csv" -NoTypeInformation -UseCulture
